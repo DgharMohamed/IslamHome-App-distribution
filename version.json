@@ -1,6 +1,7 @@
 {
-  "version": "1.0.0",
+  "version": "1.0.1",
   "notes_ar": "الإصدار الأول - نظام التحديث التلقائي مفعل",
   "notes_en": "First release - OTA update system enabled",
-  "critical": false
+  "critical": false,
+  "url": "https://dgharmohamed.github.io/IslamHome-App-distribution/build/app/outputs/flutter-apk/app-release.apk"
 }
