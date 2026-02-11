@@ -26,6 +26,7 @@ import 'package:islamic_library_flutter/presentation/screens/downloads_screen.da
 import 'package:islamic_library_flutter/presentation/screens/favorites_screen.dart';
 import 'package:islamic_library_flutter/presentation/screens/player_screen.dart';
 import 'package:islamic_library_flutter/presentation/screens/settings_screen.dart';
+import 'package:islamic_library_flutter/presentation/screens/profile_screen.dart';
 import 'package:islamic_library_flutter/presentation/screens/all_sections_screen.dart';
 import 'package:islamic_library_flutter/presentation/widgets/main_scaffold.dart';
 import 'package:islamic_library_flutter/data/models/reciter_model.dart';
@@ -251,6 +252,10 @@ final _router = GoRouter(
         GoRoute(
           path: '/settings',
           builder: (context, state) => const SettingsScreen(),
+        ),
+        GoRoute(
+          path: '/profile',
+          builder: (context, state) => const ProfileScreen(),
         ),
       ],
     ),

@@ -126,7 +126,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
         context.push('/hadith');
         break;
       case 4:
-        // context.push('/profile');
+        context.push('/profile');
         break;
     }
   }
