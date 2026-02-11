@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:islamic_library_flutter/l10n/generated/app_localizations.dart';
 
 import 'package:islamic_library_flutter/core/utils/scaffold_utils.dart';
-import 'package:islamic_library_flutter/core/services/update_service.dart';
+import 'package:islamic_library_flutter/core/services/update_manager.dart';
 
 class MainScaffold extends ConsumerStatefulWidget {
   final Widget child;
@@ -27,7 +27,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> {
     // Check for updates on app startup
     Future.microtask(() {
       if (mounted) {
-        UpdateService.checkForUpdate(context);
+        UpdateManager.check(context);
       }
     });
   }
