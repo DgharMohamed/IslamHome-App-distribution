@@ -68,3 +68,16 @@ GoogleService-Info.plist
 /windows/Runner.sln
 /linux/flutter/ephemeral/
 /macos/Flutter/ephemeral/
+
+# AI/Agent related
+.agent/
+.kiro/
+.gemini/
+.system_generated/
+*_SUMMARY.md
+NOTIFICATION_FIX_SUMMARY.md
+NOTIFICATION_COMPLETE_FIX.md
+NOTIFICATION_DEBUG_GUIDE.md
+task.md
+implementation_plan.md
+walkthrough.md
