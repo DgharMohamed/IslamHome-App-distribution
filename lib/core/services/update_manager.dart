@@ -23,7 +23,15 @@ class UpdateManager {
         if (!context.mounted) return;
 
         final data = json.decode(response.body);
-        final latestVersion = data['version'] as String;
+        final latestVersion = (data['version'] as String)
+            .trim()
+            .toLowerCase()
+            .replaceAll('v', '');
+        final sanitizedCurrent = currentVersion
+            .split('+')[0]
+            .trim()
+            .toLowerCase()
+            .replaceAll('v', '');
 
         // Get localized notes
         final locale = View.of(context).platformDispatcher.locale.languageCode;
@@ -40,7 +48,7 @@ class UpdateManager {
               'New update available';
         }
 
-        if (_isNewer(currentVersion, latestVersion)) {
+        if (_isNewer(sanitizedCurrent, latestVersion)) {
           if (context.mounted) {
             _showUpdateDialog(context, latestVersion, notes);
           }
@@ -52,11 +60,26 @@ class UpdateManager {
   }
 
   static bool _isNewer(String current, String latest) {
-    List<int> cur = current.split('.').map(int.parse).toList();
-    List<int> lat = latest.split('.').map(int.parse).toList();
-    for (int i = 0; i < lat.length; i++) {
-      if (i >= cur.length || lat[i] > cur[i]) return true;
-      if (lat[i] < cur[i]) return false;
+    try {
+      List<int> cur = current
+          .split('.')
+          .map((e) => int.tryParse(e) ?? 0)
+          .toList();
+      List<int> lat = latest
+          .split('.')
+          .map((e) => int.tryParse(e) ?? 0)
+          .toList();
+
+      int maxLength = cur.length > lat.length ? cur.length : lat.length;
+      for (int i = 0; i < maxLength; i++) {
+        int vCur = i < cur.length ? cur[i] : 0;
+        int vLat = i < lat.length ? lat[i] : 0;
+
+        if (vLat > vCur) return true;
+        if (vLat < vCur) return false;
+      }
+    } catch (e) {
+      debugPrint('Version comparison error: $e');
     }
     return false;
   }
@@ -106,31 +129,51 @@ class _UpdateDialogState extends State<_UpdateDialog> {
           .execute(widget.apkUrl, destinationFilename: 'islam_home.apk')
           .listen(
             (OtaEvent event) {
+              if (!mounted) return;
               setState(() {
                 switch (event.status) {
                   case OtaStatus.DOWNLOADING:
                     _progress = double.tryParse(event.value ?? '0') ?? 0;
+                    _statusMessage = 'جاري التحميل: ${_progress.toInt()}%';
                     break;
                   case OtaStatus.INSTALLING:
                     _statusMessage = 'جاري التثبيت...';
                     _isDownloading = false;
-                    Navigator.pop(context);
+                    _progress = 100;
+                    Future.delayed(const Duration(seconds: 1), () {
+                      if (mounted) Navigator.pop(context);
+                    });
                     break;
                   case OtaStatus.ALREADY_RUNNING_ERROR:
                     _statusMessage = 'التحميل قيد التشغيل بالفعل';
+                    _isDownloading = false;
                     break;
                   case OtaStatus.PERMISSION_NOT_GRANTED_ERROR:
-                    _statusMessage = 'تم رفض الإذن';
+                    _statusMessage = 'تم رفض إذن التثبيت';
+                    _isDownloading = false;
+                    break;
+                  case OtaStatus.DOWNLOAD_ERROR:
+                    _statusMessage = 'فشل التحميل (تأكد من الإنترنت)';
+                    _isDownloading = false;
+                    break;
+                  case OtaStatus.CHECKSUM_ERROR:
+                    _statusMessage = 'خطأ في سلامة الملف';
+                    _isDownloading = false;
+                    break;
+                  case OtaStatus.INTERNAL_ERROR:
+                    _statusMessage = 'خطأ داخلي في النظام';
+                    _isDownloading = false;
                     break;
                   default:
-                    _statusMessage = 'حدث خطأ: ${event.status}';
+                    _statusMessage = 'حدث خطأ: ${event.status.name}';
                     _isDownloading = false;
                 }
               });
             },
             onError: (e) {
+              if (!mounted) return;
               setState(() {
-                _statusMessage = 'فشل التحميل: $e';
+                _statusMessage = 'فشل تقني: $e';
                 _isDownloading = false;
               });
             },
