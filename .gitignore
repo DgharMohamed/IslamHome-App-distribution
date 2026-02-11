@@ -1,0 +1,70 @@
+# Miscellaneous
+*.class
+*.log
+*.txt
+*.html
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code related
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/cmake-kits.json
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Sensitive data / Local config
+.env*
+*.env
+local.properties
+key.properties
+**/*.keystore
+**/*.jks
+google-services.json
+GoogleService-Info.plist
+
+# Desktop Build related
+/windows/flutter/ephemeral/
+/windows/CMakeCache.txt
+/windows/CMakeFiles/
+/windows/CMakeScripts/
+/windows/Runner.vcxproj
+/windows/Runner.sln
+/linux/flutter/ephemeral/
+/macos/Flutter/ephemeral/
