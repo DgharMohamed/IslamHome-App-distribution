@@ -1,7 +1,7 @@
 {
-  "version": "1.1.1",
-  "build_number": "12",
-  "release_notes": "UI Improvements: Fixed redundant headers in Continuous Reading mode for a cleaner experience. Dynamic version display in all screens.",
+  "version": "1.1.2",
+  "build_number": "13",
+  "release_notes": "UI Refinement: Simplified Quran interface to exclusively use the Tarteel (Mushaf-like) view for a cleaner experience. Removed redundant reading modes.",
   "priority": "medium",
   "force_update": false
 }
