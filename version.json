@@ -1,7 +1,7 @@
 {
-  "version": "1.0.8",
-  "build_number": "9",
-  "release_notes": "CRITICAL FIX: Solves OTA update crash and missing permissions. You MUST install this version manually.",
-  "priority": "critical",
-  "force_update": true
+  "version": "1.0.9",
+  "build_number": "10",
+  "release_notes": "Initial Permission Requests: Added GPS, Notifications, and Install Package prompts on first launch for better functionality.",
+  "priority": "normal",
+  "force_update": false
 }
