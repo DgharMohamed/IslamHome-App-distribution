@@ -5,9 +5,9 @@ import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:islamic_library_flutter/core/theme/app_theme.dart';
 import 'package:islamic_library_flutter/data/services/audio_player_service.dart';
-import 'package:islamic_library_flutter/presentation/providers/downloads_provider.dart';
+import 'package:islamic_library_flutter/data/services/download_service.dart';
+import 'package:islamic_library_flutter/presentation/providers/download_state.dart';
 import 'package:islamic_library_flutter/l10n/generated/app_localizations.dart';
-import 'dart:io';
 import 'dart:math';
 
 class PlayerControls extends ConsumerWidget {
@@ -301,98 +301,96 @@ class PlayerControls extends ConsumerWidget {
               Consumer(
                 builder: (context, ref, child) {
                   final state = audioService.player.sequenceState;
-
                   final metadata = state?.currentSource?.tag as MediaItem?;
-                  if (metadata == null) {
-                    return const SizedBox.shrink();
-                  }
+                  if (metadata == null) return const SizedBox.shrink();
 
                   final title = metadata.title;
                   final artist = metadata.artist;
                   final url = metadata.id;
+                  final album = metadata.album;
+                  final extras = metadata.extras;
 
-                  final downloads = ref.watch(downloadsProvider).value ?? [];
-                  final expectedFilename = '$artist - $title.mp3';
-                  final isDownloaded = downloads.any(
-                    (f) =>
-                        f.path.split(Platform.pathSeparator).last ==
-                        expectedFilename,
-                  );
+                  final isSeerah = album == 'السيرة النبوية';
+                  final downloadNotifier = ref.read(downloadProvider.notifier);
+                  final downloadState = ref.watch(downloadProvider);
 
-                  return TextButton.icon(
-                    onPressed: isDownloaded
-                        ? null
-                        : () async {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  l10n.downloadingSurah(title),
-                                  style: GoogleFonts.cairo(color: Colors.white),
+                  // Extract IDs if possible
+                  final int episodeId = extras?['id'] ?? 0;
+
+                  return FutureBuilder<bool>(
+                    future: isSeerah
+                        ? downloadNotifier.isSeerahDownloaded(
+                            artist ?? '',
+                            episodeId,
+                          )
+                        : Future.value(false),
+                    builder: (context, snapshot) {
+                      final bool isDownloaded = snapshot.data ?? false;
+
+                      // Identify current download status for progress
+                      final String downloadId = isSeerah
+                          ? 'seerah_${artist}_seerah_audio_$episodeId'
+                          : '';
+                      final activeDownload = downloadState[downloadId];
+                      final bool isDownloading =
+                          activeDownload?.status == DownloadStatus.downloading;
+                      final double progress = activeDownload?.progress ?? 0.0;
+
+                      return TextButton.icon(
+                        onPressed: isDownloaded || isDownloading
+                            ? null
+                            : () async {
+                                if (isSeerah) {
+                                  await downloadNotifier.startSeerahDownload(
+                                    reciterName: artist ?? 'بدر المشاري',
+                                    title: title,
+                                    url: url,
+                                    episodeId: episodeId,
+                                  );
+                                }
+                              },
+                        icon: isDownloading
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  value: progress,
+                                  strokeWidth: 2,
+                                  color: AppTheme.primaryColor,
                                 ),
-                                backgroundColor: AppTheme.primaryColor,
-                                duration: const Duration(seconds: 1),
+                              )
+                            : Icon(
+                                isDownloaded
+                                    ? Icons.offline_pin_rounded
+                                    : Icons.download_rounded,
+                                color: isDownloaded
+                                    ? AppTheme.primaryColor
+                                    : Colors.white70,
+                                size: 20,
                               ),
-                            );
-
-                            try {
-                              await ref
-                                  .read(downloadsProvider.notifier)
-                                  .downloadFile(url, expectedFilename);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      l10n.downloadSuccessful,
-                                      style: GoogleFonts.cairo(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    backgroundColor: Colors.green,
-                                  ),
-                                );
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      l10n.downloadFailed(e.toString()),
-                                      style: GoogleFonts.cairo(
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                              }
-                            }
-                          },
-                    icon: Icon(
-                      isDownloaded
-                          ? Icons.offline_pin_rounded
-                          : Icons.download_rounded,
-                      color: isDownloaded
-                          ? AppTheme.primaryColor
-                          : Colors.white70,
-                      size: 20,
-                    ),
-                    label: Text(
-                      isDownloaded ? l10n.downloaded : l10n.download,
-                      style: GoogleFonts.cairo(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    style: TextButton.styleFrom(
-                      backgroundColor: Colors.white.withValues(alpha: 0.1),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
+                        label: Text(
+                          isDownloaded
+                              ? l10n.downloaded
+                              : isDownloading
+                              ? '${(progress * 100).toInt()}%'
+                              : l10n.download,
+                          style: GoogleFonts.cairo(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.white.withValues(alpha: 0.1),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 8,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                      );
+                    },
                   );
                 },
               ),

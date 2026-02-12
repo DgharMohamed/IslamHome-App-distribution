@@ -27,7 +27,7 @@ class _DownloadButtonState extends ConsumerState<DownloadButton> {
   bool _isDownloaded = false;
   bool _isLoadingCheck = true;
   String get _id =>
-      '${widget.reciter.id}_${widget.moshaf.moshafType}_${widget.surah.number}';
+      'quran_${widget.reciter.id}_${widget.moshaf.moshafType}_${widget.surah.number}';
 
   @override
   void initState() {

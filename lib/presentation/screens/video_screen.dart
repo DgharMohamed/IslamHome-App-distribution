@@ -9,6 +9,8 @@ import 'package:islamic_library_flutter/core/theme/app_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:islamic_library_flutter/l10n/generated/app_localizations.dart';
 import 'package:islamic_library_flutter/data/services/audio_player_service.dart';
+import 'package:islamic_library_flutter/data/services/download_service.dart';
+import 'package:islamic_library_flutter/presentation/providers/download_state.dart';
 
 class VideoScreen extends ConsumerStatefulWidget {
   const VideoScreen({super.key});
@@ -510,6 +512,73 @@ class _VideoScreenState extends ConsumerState<VideoScreen> {
                     ),
                   ],
                 ),
+              ),
+              // Download Button
+              Consumer(
+                builder: (context, ref, child) {
+                  final downloadNotifier = ref.read(downloadProvider.notifier);
+                  final downloadState = ref.watch(downloadProvider);
+
+                  return FutureBuilder<bool>(
+                    future: downloadNotifier.isSeerahDownloaded(
+                      video.reciter ?? '',
+                      video.id ?? 0,
+                    ),
+                    builder: (context, snapshot) {
+                      final bool isDownloaded = snapshot.data ?? false;
+                      final String downloadId =
+                          'seerah_${video.reciter}_seerah_audio_${video.id}';
+                      final activeDownload = downloadState[downloadId];
+                      final bool isDownloading =
+                          activeDownload?.status == DownloadStatus.downloading;
+                      final double progress = activeDownload?.progress ?? 0.0;
+
+                      if (isDownloaded) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.offline_pin_rounded,
+                            color: AppTheme.primaryColor,
+                            size: 24,
+                          ),
+                        );
+                      }
+
+                      if (isDownloading) {
+                        return Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              value: progress,
+                              strokeWidth: 2,
+                              color: AppTheme.primaryColor,
+                            ),
+                          ),
+                        );
+                      }
+
+                      return IconButton(
+                        icon: Icon(
+                          Icons.download_for_offline_rounded,
+                          color: Colors.white.withValues(alpha: 0.5),
+                          size: 28,
+                        ),
+                        onPressed: () async {
+                          if (video.url != null) {
+                            await downloadNotifier.startSeerahDownload(
+                              reciterName: video.reciter ?? 'بدر المشاري',
+                              title: video.title ?? '',
+                              url: video.url!,
+                              episodeId: video.id ?? 0,
+                            );
+                          }
+                        },
+                      );
+                    },
+                  );
+                },
               ),
             ],
           ),

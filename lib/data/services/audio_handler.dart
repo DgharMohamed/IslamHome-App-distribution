@@ -33,6 +33,8 @@ class AudioPlayerHandler extends BaseAudioHandler
           MediaControl.skipToNext,
         ],
         systemActions: const {
+          MediaAction.fastForward,
+          MediaAction.rewind,
           MediaAction.seek,
           MediaAction.seekForward,
           MediaAction.seekBackward,
@@ -142,11 +144,14 @@ class AudioPlayerHandler extends BaseAudioHandler
       PlaybackState(
         controls: [
           MediaControl.skipToPrevious,
+          MediaControl.rewind,
           if (playing) MediaControl.pause else MediaControl.play,
-          MediaControl.stop,
+          MediaControl.fastForward,
           MediaControl.skipToNext,
         ],
         systemActions: const {
+          MediaAction.fastForward,
+          MediaAction.rewind,
           MediaAction.seek,
           MediaAction.seekForward,
           MediaAction.seekBackward,
@@ -157,7 +162,7 @@ class AudioPlayerHandler extends BaseAudioHandler
           MediaAction.play,
           MediaAction.pause,
         },
-        androidCompactActionIndices: const [0, 1, 3],
+        androidCompactActionIndices: const [0, 2, 4],
         processingState: {
           ProcessingState.idle: AudioProcessingState.idle,
           ProcessingState.loading: AudioProcessingState.loading,
@@ -210,6 +215,29 @@ class AudioPlayerHandler extends BaseAudioHandler
       ),
     );
     await super.stop();
+  }
+
+  @override
+  Future<void> fastForward() async {
+    debugPrint('🎵 AudioHandler: fastForward()');
+    final target = _player.position + const Duration(seconds: 10);
+    final duration = _player.duration ?? Duration.zero;
+    if (target < duration) {
+      await seek(target);
+    } else {
+      await seek(duration);
+    }
+  }
+
+  @override
+  Future<void> rewind() async {
+    debugPrint('🎵 AudioHandler: rewind()');
+    final target = _player.position - const Duration(seconds: 10);
+    if (target > Duration.zero) {
+      await seek(target);
+    } else {
+      await seek(Duration.zero);
+    }
   }
 
   @override

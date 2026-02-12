@@ -324,9 +324,10 @@ class QuranAudioHandler extends BaseAudioHandler
       PlaybackState(
         controls: [
           MediaControl.skipToPrevious,
+          MediaControl.rewind,
           if (playing) MediaControl.pause else MediaControl.play,
+          MediaControl.fastForward,
           MediaControl.skipToNext,
-          MediaControl.stop,
         ],
         systemActions: const {
           MediaAction.seek,
@@ -338,8 +339,10 @@ class QuranAudioHandler extends BaseAudioHandler
           MediaAction.stop,
           MediaAction.play,
           MediaAction.pause,
+          MediaAction.fastForward,
+          MediaAction.rewind,
         },
-        androidCompactActionIndices: const [0, 1, 2],
+        androidCompactActionIndices: const [0, 2, 4],
         processingState: {
           ProcessingState.idle: AudioProcessingState.idle,
           ProcessingState.loading: AudioProcessingState.loading,
@@ -452,6 +455,29 @@ class QuranAudioHandler extends BaseAudioHandler
   Future<void> seek(Duration position) async {
     debugPrint('🎵 QuranAudioHandler: seek() to $position');
     await _player.seek(position);
+  }
+
+  @override
+  Future<void> fastForward() async {
+    debugPrint('🎵 QuranAudioHandler: fastForward()');
+    final target = _player.position + const Duration(seconds: 10);
+    final duration = _player.duration ?? Duration.zero;
+    if (target < duration) {
+      await seek(target);
+    } else {
+      await seek(duration);
+    }
+  }
+
+  @override
+  Future<void> rewind() async {
+    debugPrint('🎵 QuranAudioHandler: rewind()');
+    final target = _player.position - const Duration(seconds: 10);
+    if (target > Duration.zero) {
+      await seek(target);
+    } else {
+      await seek(Duration.zero);
+    }
   }
 
   /// Skip to the next verse in the playlist

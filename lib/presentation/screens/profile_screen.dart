@@ -47,7 +47,7 @@ class ProfileScreen extends ConsumerWidget {
                       showAboutDialog(
                         context: context,
                         applicationName: 'Islam Home',
-                        applicationVersion: '1.0.0',
+                        applicationVersion: '1.0.2',
                         applicationIcon: const Icon(
                           Icons.mosque,
                           color: AppTheme.primaryColor,

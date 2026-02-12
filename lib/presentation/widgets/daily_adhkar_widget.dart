@@ -29,6 +29,9 @@ class DailyAdhkarWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final dailyAdhkar = ref.watch(dailyAdhkarProvider);
 
+    final locale = View.of(context).platformDispatcher.locale.languageCode;
+    final isArabic = locale == 'ar';
+
     return dailyAdhkar.when(
       data: (dhikr) {
         if (dhikr == null) return const SizedBox.shrink();
@@ -51,7 +54,7 @@ class DailyAdhkarWidget extends ConsumerWidget {
                   ),
                   const SizedBox(width: 12),
                   Text(
-                    'Remembrance',
+                    isArabic ? 'ذكر اليوم' : 'Daily Adhkar',
                     style: GoogleFonts.tajawal(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -62,14 +65,21 @@ class DailyAdhkarWidget extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                dhikr.zekrText,
+                (isArabic ? dhikr.zekrText : dhikr.english) ?? dhikr.zekrText,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.amiri(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  height: 1.6,
-                ),
+                style: isArabic
+                    ? GoogleFonts.amiri(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        height: 1.6,
+                      )
+                    : GoogleFonts.tajawal(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        height: 1.5,
+                      ),
               ),
               if (dhikr.description != null &&
                   dhikr.description!.isNotEmpty) ...[

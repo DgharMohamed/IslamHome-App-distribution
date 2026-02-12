@@ -41,18 +41,28 @@ class DownloadService {
   Future<String> getFilePath(
     String reciterId,
     String moshafType,
-    int surahNumber,
-  ) async {
+    int surahNumber, {
+    String type = 'quran',
+  }) async {
     final dir = await _getDownloadDirectory();
+    if (type == 'seerah') {
+      return '$dir/seerah/$reciterId/$surahNumber.mp3';
+    }
     return '$dir/$reciterId/$moshafType/$surahNumber.mp3';
   }
 
   Future<bool> isFileDownloaded(
     String reciterId,
     String moshafType,
-    int surahNumber,
-  ) async {
-    final path = await getFilePath(reciterId, moshafType, surahNumber);
+    int surahNumber, {
+    String type = 'quran',
+  }) async {
+    final path = await getFilePath(
+      reciterId,
+      moshafType,
+      surahNumber,
+      type: type,
+    );
     return File(path).exists();
   }
 
@@ -62,8 +72,8 @@ class DownloadService {
     required String moshafType,
     required int surahNumber,
     required String title,
-    required String
-    id, // unique ID for tracking (e.g., "reciterId_moshafType_surahNumber")
+    required String id,
+    String type = 'quran',
   }) {
     // check if already downloading
     if (_activeDownloads.containsKey(url)) return;
@@ -78,6 +88,7 @@ class DownloadService {
       surahNumber: surahNumber,
       title: title,
       id: id,
+      type: type,
     );
 
     _queue.add(request);
@@ -101,6 +112,7 @@ class DownloadService {
         request.reciterId,
         request.moshafType,
         request.surahNumber,
+        type: request.type,
       );
 
       // Ensure directory exists for this specific file
@@ -110,8 +122,7 @@ class DownloadService {
       // Notify start
       _notifyProgress(request.id, 0.0, DownloadStatus.downloading);
       await _notificationService.showProgressNotification(
-        id: request
-            .surahNumber, // Use surah number as notification ID (simple hash)
+        id: request.notificationId,
         title: 'جاري تحميل ${request.title}',
         body: 'يرجى الانتظار...',
         progress: 0,
@@ -130,7 +141,7 @@ class DownloadService {
             // Throttle notification updates? For now, let's update every 5%
             if ((progress * 100).toInt() % 5 == 0) {
               _notificationService.showProgressNotification(
-                id: request.surahNumber,
+                id: request.notificationId,
                 title: 'جاري تحميل ${request.title}',
                 body: '${(progress * 100).toStringAsFixed(0)}%',
                 progress: (progress * 100).toInt(),
@@ -145,7 +156,7 @@ class DownloadService {
       _notifyProgress(request.id, 1.0, DownloadStatus.completed);
       await _addToHistory(request);
       await _notificationService.showDownloadCompleteNotification(
-        id: request.surahNumber,
+        id: request.notificationId,
         title: 'تم التحميل',
         body: 'تم تحميل ${request.title} بنجاح',
       );
@@ -157,7 +168,7 @@ class DownloadService {
         debugPrint('Download error: $e');
         _notifyProgress(request.id, 0.0, DownloadStatus.failed);
         await _notificationService.showDownloadCompleteNotification(
-          id: request.surahNumber,
+          id: request.notificationId,
           title: 'فشل التحميل',
           body: 'حدث خطأ أثناء تحميل ${request.title}',
         );
@@ -256,6 +267,8 @@ class DownloadRequest {
   final int surahNumber;
   final String title;
   final String id;
+  final String type; // 'quran' or 'seerah'
+  final int notificationId;
 
   DownloadRequest({
     required this.url,
@@ -264,7 +277,9 @@ class DownloadRequest {
     required this.surahNumber,
     required this.title,
     required this.id,
-  });
+    this.type = 'quran',
+    int? notificationId,
+  }) : notificationId = notificationId ?? id.hashCode.abs();
 
   Map<String, dynamic> toJson() => {
     'url': url,
@@ -273,6 +288,8 @@ class DownloadRequest {
     'surahNumber': surahNumber,
     'title': title,
     'id': id,
+    'type': type,
+    'notificationId': notificationId,
   };
 
   factory DownloadRequest.fromJson(Map<String, dynamic> json) =>
@@ -283,6 +300,8 @@ class DownloadRequest {
         surahNumber: json['surahNumber'],
         title: json['title'],
         id: json['id'],
+        type: json['type'] ?? 'quran',
+        notificationId: json['notificationId'],
       );
 }
 

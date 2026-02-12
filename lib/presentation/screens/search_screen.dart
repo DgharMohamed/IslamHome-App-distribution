@@ -93,9 +93,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       // 3. Search Adhkar
       final adhkarResults = await azkarService.searchAdhkar(query);
       for (var dhikr in adhkarResults) {
+        final isArabic =
+            Localizations.localeOf(ref.context).languageCode == 'ar';
         allResults.add(
           SearchResult(
-            title: dhikr.zekrText,
+            title:
+                (isArabic ? dhikr.zekrText : dhikr.english) ?? dhikr.zekrText,
             subtitle: l10n.searchAdhkarSubtitle(dhikr.category ?? ''),
             type: SearchType.adhkar,
             data: dhikr,

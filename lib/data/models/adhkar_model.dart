@@ -9,6 +9,7 @@ class AdhkarModel {
   final String? text;
   final String? arabic;
   final String? zikr;
+  final String? english;
   final dynamic count;
   final String? description;
   final String? reference;
@@ -19,6 +20,7 @@ class AdhkarModel {
     this.text,
     this.arabic,
     this.zikr,
+    this.english,
     this.count,
     this.description,
     this.reference,

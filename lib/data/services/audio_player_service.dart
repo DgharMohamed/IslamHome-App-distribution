@@ -225,6 +225,7 @@ class AudioPlayerService {
                 ),
                 displayTitle: v.title ?? 'مقطع مرئي',
                 displaySubtitle: v.reciter ?? 'الشيخ بدر المشاري',
+                extras: {'id': v.id},
               ),
             );
           })

@@ -76,8 +76,13 @@ class DownloadNotifier extends Notifier<Map<String, DownloadItemState>> {
     };
   }
 
-  String _generateId(String reciterId, String moshafType, int surahNumber) {
-    return '${reciterId}_${moshafType}_$surahNumber';
+  String _generateId(
+    String reciterId,
+    String moshafType,
+    int surahNumber, {
+    String type = 'quran',
+  }) {
+    return '${type}_${reciterId}_${moshafType}_$surahNumber';
   }
 
   Future<void> startDownload({
@@ -89,6 +94,7 @@ class DownloadNotifier extends Notifier<Map<String, DownloadItemState>> {
       reciter.id.toString(),
       moshaf.moshafType.toString(),
       surah.number!,
+      type: 'quran',
     );
 
     String baseUrl = moshaf.server!;
@@ -104,6 +110,33 @@ class DownloadNotifier extends Notifier<Map<String, DownloadItemState>> {
       surahNumber: surah.number!,
       title: title,
       id: id,
+      type: 'quran',
+    );
+
+    _addState(id, title, url);
+  }
+
+  Future<void> startSeerahDownload({
+    required String reciterName,
+    required String title,
+    required String url,
+    required int episodeId,
+  }) async {
+    final id = _generateId(
+      reciterName,
+      'seerah_audio',
+      episodeId,
+      type: 'seerah',
+    );
+
+    _downloadService.addToQueue(
+      url: url,
+      reciterId: reciterName,
+      moshafType: 'seerah_audio',
+      surahNumber: episodeId,
+      title: title,
+      id: id,
+      type: 'seerah',
     );
 
     _addState(id, title, url);
@@ -119,6 +152,7 @@ class DownloadNotifier extends Notifier<Map<String, DownloadItemState>> {
         reciter.id.toString(),
         moshaf.moshafType.toString(),
         surah.number!,
+        type: 'quran',
       );
       if (state.containsKey(id) &&
           state[id]!.status == DownloadStatus.downloading) {
@@ -139,6 +173,16 @@ class DownloadNotifier extends Notifier<Map<String, DownloadItemState>> {
       reciter.id.toString(),
       moshaf.moshafType.toString(),
       surah.number!,
+      type: 'quran',
+    );
+  }
+
+  Future<bool> isSeerahDownloaded(String reciterName, int episodeId) async {
+    return _downloadService.isFileDownloaded(
+      reciterName,
+      'seerah_audio',
+      episodeId,
+      type: 'seerah',
     );
   }
 
@@ -152,6 +196,28 @@ class DownloadNotifier extends Notifier<Map<String, DownloadItemState>> {
       reciter.id.toString(),
       moshaf.moshafType.toString(),
       surah.number!,
+      type: 'quran',
+    );
+    await _downloadService.removeFromHistory(id);
+
+    if (state.containsKey(id)) {
+      final newState = Map<String, DownloadItemState>.from(state);
+      newState.remove(id);
+      state = newState;
+    }
+  }
+
+  Future<void> deleteSeerahFile(String reciterName, int episodeId) async {
+    await _downloadService.deleteDownload(
+      reciterName,
+      'seerah_audio',
+      episodeId,
+    );
+    final id = _generateId(
+      reciterName,
+      'seerah_audio',
+      episodeId,
+      type: 'seerah',
     );
     await _downloadService.removeFromHistory(id);
 
@@ -163,10 +229,24 @@ class DownloadNotifier extends Notifier<Map<String, DownloadItemState>> {
   }
 
   Future<void> deleteFileById(String id) async {
-    // Deletion by ID requires parsing ID or looking up history.
-    // ID format: reciterId_moshafType_surahNumber
+    // ID format: type_reciterId_moshafType_surahNumber
     final parts = id.split('_');
-    if (parts.length == 3) {
+    if (parts.length == 4) {
+      // parts[0] is the type
+      await _downloadService.deleteDownload(
+        parts[1],
+        parts[2],
+        int.parse(parts[3]),
+      );
+      await _downloadService.removeFromHistory(id);
+
+      if (state.containsKey(id)) {
+        final newState = Map<String, DownloadItemState>.from(state);
+        newState.remove(id);
+        state = newState;
+      }
+    } else if (parts.length == 3) {
+      // Legacy ID support
       await _downloadService.deleteDownload(
         parts[0],
         parts[1],

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.2",
-  "notes_ar": "الإصدار 1.0.2 - إصلاح مشكلة التحديث التلقائي",
-  "notes_en": "v1.0.2 - Fixed OTA update crash",
+  "version": "1.0.3",
+  "notes_ar": "الإصدار 1.0.3 - إصلاح التحديث التلقائي + دعم اللغة الإنجليزية للأذكار والأدعية",
+  "notes_en": "v1.0.3 - OTA update fix + English translation support for Adhkar and Duas",
   "critical": false,
   "url": "https://dgharmohamed.github.io/IslamHome-App-distribution/build/app/outputs/flutter-apk/app-release.apk"
 }

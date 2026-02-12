@@ -25,13 +25,13 @@ class SmartKhatmaWidget extends ConsumerWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: const Color(0xFFFDFBF7), // Creamy white for premium feel
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF8B7355).withValues(alpha: 0.08),
+            color: Colors.black.withValues(alpha: 0.2),
             blurRadius: 20,
-            offset: const Offset(0, 8),
+            offset: const Offset(0, 10),
           ),
         ],
       ),
@@ -251,29 +251,50 @@ class SmartKhatmaWidget extends ConsumerWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(16),
       child: Container(
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
           color: AppTheme.surfaceColor,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.black.withValues(alpha: 0.05)),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 18, color: AppTheme.primaryColor),
-            const SizedBox(width: 10),
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryColor.withValues(alpha: 0.15),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(icon, size: 20, color: AppTheme.primaryColor),
+            ),
+            const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   title,
                   style: GoogleFonts.cairo(
-                    fontSize: 12,
+                    fontSize: 13,
                     fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    height: 1.2,
                   ),
                 ),
                 Text(
                   subtitle,
-                  style: GoogleFonts.cairo(fontSize: 10, color: Colors.black45),
+                  style: GoogleFonts.cairo(
+                    fontSize: 11,
+                    color: Colors.white70,
+                    height: 1.2,
+                  ),
                 ),
               ],
             ),

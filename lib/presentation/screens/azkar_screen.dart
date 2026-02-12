@@ -206,13 +206,30 @@ class _AzkarScreenState extends ConsumerState<AzkarScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   Text(
-                                    item.zekr,
+                                    (Localizations.localeOf(
+                                                  context,
+                                                ).languageCode ==
+                                                'ar'
+                                            ? item.zekr
+                                            : item.english) ??
+                                        item.zekr,
                                     textAlign: TextAlign.right,
-                                    style: GoogleFonts.amiri(
-                                      fontSize: 20,
-                                      height: 1.8,
-                                      color: Colors.white,
-                                    ),
+                                    style:
+                                        Localizations.localeOf(
+                                              context,
+                                            ).languageCode ==
+                                            'ar'
+                                        ? GoogleFonts.amiri(
+                                            fontSize: 20,
+                                            height: 1.8,
+                                            color: Colors.white,
+                                          )
+                                        : GoogleFonts.tajawal(
+                                            fontSize: 18,
+                                            height: 1.5,
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                   ),
                                   if (item.description != null &&
                                       item.description!.isNotEmpty) ...[
