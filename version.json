@@ -1,7 +1,7 @@
 {
-  "version": "1.0.7",
-  "build_number": "8",
-  "release_notes": "UI Improvements: Removed side barriers from horizontal lists for a cleaner look.",
-  "priority": "high",
-  "force_update": false
+  "version": "1.0.8",
+  "build_number": "9",
+  "release_notes": "CRITICAL FIX: Solves OTA update crash and missing permissions. You MUST install this version manually.",
+  "priority": "critical",
+  "force_update": true
 }
