@@ -1,7 +1,7 @@
 {
-  "version": "1.0.6",
-  "build_number": "7",
-  "release_notes": "CRITICAL: Fixes OTA update crash. You must install this version MANUALLY. Future updates will work automatically.",
-  "priority": "critical",
-  "force_update": true
+  "version": "1.0.7",
+  "build_number": "8",
+  "release_notes": "UI Improvements: Removed side barriers from horizontal lists for a cleaner look.",
+  "priority": "high",
+  "force_update": false
 }
