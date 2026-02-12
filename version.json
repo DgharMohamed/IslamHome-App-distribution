@@ -1,7 +1,7 @@
 {
-  "version": "1.0.3",
-  "notes_ar": "الإصدار 1.0.3 - إصلاح التحديث التلقائي + دعم اللغة الإنجليزية للأذكار والأدعية",
-  "notes_en": "v1.0.3 - OTA update fix + English translation support for Adhkar and Duas",
-  "critical": false,
-  "url": "https://dgharmohamed.github.io/IslamHome-App-distribution/build/app/outputs/flutter-apk/app-release.apk"
+  "version": "1.0.5",
+  "build_number": "6",
+  "release_notes": "Added English translations for all major Hadith books.",
+  "priority": "high",
+  "force_update": false
 }
