@@ -1,7 +1,7 @@
 {
-  "version": "1.0.5",
-  "build_number": "6",
-  "release_notes": "Added English translations for all major Hadith books.",
-  "priority": "high",
-  "force_update": false
+  "version": "1.0.6",
+  "build_number": "7",
+  "release_notes": "CRITICAL: Fixes OTA update crash. You must install this version MANUALLY. Future updates will work automatically.",
+  "priority": "critical",
+  "force_update": true
 }
