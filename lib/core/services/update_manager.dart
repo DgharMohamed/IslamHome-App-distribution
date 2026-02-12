@@ -9,7 +9,7 @@ class UpdateManager {
   static const String _versionUrl =
       'https://dgharmohamed.github.io/IslamHome-App-distribution/version.json';
   static const String _apkUrl =
-      'https://dgharmohamed.github.io/IslamHome-App-distribution/app-release.apk';
+      'https://dgharmohamed.github.io/IslamHome-App-distribution/build/app/outputs/flutter-apk/app-release.apk';
 
   static Future<void> check(BuildContext context) async {
     try {
